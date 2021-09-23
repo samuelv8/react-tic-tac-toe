@@ -20,41 +20,19 @@ function Board(props) {
         );
     }
 
+    const cols = [0, 1, 2];
+    const rows = [];
+    for (let i = 0; i < 3; i++) {
+        rows.push(<div className="board-row">{
+            cols.map(j => renderSquare(i * 3 + j)) // hardcoded
+        }</div>)
+    }
+
     return (
         <div>
-            <div className="board-row">
-                {renderSquare(0)}
-                {renderSquare(1)}
-                {renderSquare(2)}
-            </div>
-            <div className="board-row">
-                {renderSquare(3)}
-                {renderSquare(4)}
-                {renderSquare(5)}
-            </div>
-            <div className="board-row">
-                {renderSquare(6)}
-                {renderSquare(7)}
-                {renderSquare(8)}
-            </div>
+            {rows}
         </div>
     );
-    // const cols = [0, 1, 2];
-    // const rows = [];
-
-    // for (let i = 0; i < 3; i++) {
-    //     rows.push(<div className="board-row">{
-    //         cols.map(j => {
-    //             this.renderSquare(i + j)
-    //         })
-    //     }</div>)
-    // }
-
-    // return (
-    //     <div>
-    //         {rows}
-    //     </div>
-    // );
 
 }
 
