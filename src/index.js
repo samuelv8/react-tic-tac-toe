@@ -40,6 +40,25 @@ class Board extends React.Component {
                 </div>
             </div>
         );
+        // const cols = [0, 1, 2];
+        // const rows = [];
+
+        // for (let i = 0; i < 3; i++) {
+        //     rows.push(<div className="board-row">{
+        //         cols.map(j => {
+        //             this.renderSquare(i + j)
+        //         })
+        //     }</div>)
+        // }
+
+        // return (
+        //     <div>
+        //         {rows}
+        //     </div>
+        // );
+
+
+
     }
 }
 
@@ -53,7 +72,6 @@ class Game extends React.Component {
                 posChanged: null,
             }],
             stepNumber: 0,
-            nextPlayer: 'X',
             winnerPlayer: null,
         };
     }
@@ -91,9 +109,9 @@ class Game extends React.Component {
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
-        const past_moves = history.slice(0, history.length);
+        // const pastMoves = history.slice(0, history.length - 1);
 
-        const moves = past_moves.map((step, move) => {
+        const moves = history.map((step, move) => {
             const desc = move ?
                 `Go to move #${move} (${step.posChanged.x}, ${step.posChanged.y})` :
                 'Go to game start';
