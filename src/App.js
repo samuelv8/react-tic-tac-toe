@@ -3,8 +3,10 @@ import Game from './components/Game';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 
-export const App = () => (
-    <Provider store={store}>
-        <Game />
-    </Provider>
-);
+export default function App() {
+    return (
+        <Provider store={store}>
+            <Game />
+        </Provider>
+    );
+}
