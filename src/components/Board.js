@@ -7,7 +7,7 @@ Board.propTypes = {
     onClick: PropTypes.func
 }
 
-function Board(props) {
+export default function Board(props) {
     const renderSquare = (i) => {
         return (
             <Square
@@ -32,5 +32,3 @@ function Board(props) {
     );
 
 }
-
-export default Board;

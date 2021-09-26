@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Board from './Board.js';
+import StatusBar from './StatusBar.js';
+import MoveList from './MoveList.js';
 
 function Game() {
     const [history, setHistory] = useState(
@@ -38,27 +40,16 @@ function Game() {
         setWinnerPlayer(calculateWinner(squares));
     }
 
-    const moves = history.map((step, move) => {
-        const desc = move ?
-            `Go to move #${move} (${step.posChanged.x}, ${step.posChanged.y})` :
-            'Go to game start';
-        return (
-            <li key={move}>
-                <button
-                    onClick={() => jumpTo(move)}
-                    disabled={stepNumber === move}
-                >
-                    {desc}
-                </button>
-            </li>
+    const handleNewGame = () => {
+        setHistory(
+            [{
+                squares: Array(9).fill(null),
+                nextPlayer: 'X',
+                posChanged: null,
+            }]
         );
-    });
-
-    let status = '';
-    if (winnerPlayer) {
-        status = 'Winner: ' + winnerPlayer;
-    } else {
-        status = 'Next player: ' + history[stepNumber].nextPlayer;
+        setStepNumber(0);
+        setWinnerPlayer(null);
     }
 
     return (
@@ -70,8 +61,16 @@ function Game() {
                 />
             </div>
             <div className="game-info">
-                <div>{status}</div>
-                <ol>{moves}</ol>
+                <StatusBar
+                    next={history[stepNumber].nextPlayer}
+                    winner={winnerPlayer}
+                    onClick={() => handleNewGame()}
+                />
+                <MoveList
+                    history={history}
+                    step={stepNumber}
+                    onClick={(move) => jumpTo(move)}
+                />
             </div>
         </div>
     );
