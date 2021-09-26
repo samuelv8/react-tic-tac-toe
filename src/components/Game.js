@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import Board from './Board.js';
 import StatusBar from './StatusBar.js';
 import MoveList from './MoveList.js';
+import WinCountTable from './WinCountTable.js';
 
 function Game() {
-    const [history, setHistory] = useState(
+    const [gameHistory, setGameHistory] = useState(
         [{
             squares: Array(9).fill(null),
             nextPlayer: 'X',
@@ -12,18 +13,24 @@ function Game() {
         }]
     );
     const [stepNumber, setStepNumber] = useState(0);
-    const [winnerPlayer, setWinnerPlayer] = useState(null);
+    const [winnerStatus, setWinnerStatus] = useState(
+        {
+            currentWinner: null,
+            xWinCount: 0,
+            oWinCount: 0
+        }
+    );
 
     const handleClick = (i) => {
-        const hist = history.slice(0, stepNumber + 1);
+        const hist = gameHistory.slice(0, stepNumber + 1);
         const current = hist[hist.length - 1];
         const squares = current.squares.slice();
-        if (squares[i] || winnerPlayer) {
+        if (squares[i] || winnerStatus.currentWinner) {
             return;
         }
         squares[i] = current.nextPlayer;
         const next = setNextPlayer(current.nextPlayer);
-        setHistory(
+        setGameHistory(
             hist.concat([{
                 squares: squares,
                 nextPlayer: next,
@@ -31,17 +38,27 @@ function Game() {
             }])
         );
         setStepNumber(hist.length);
-        setWinnerPlayer(calculateWinner(squares));
+        setWinnerStatus(() => {
+            let t = calculateWinner(squares);
+            return ({
+                currentWinner: t,
+                xWinCount: t === 'X' ? winnerStatus.xWinCount + 1 : winnerStatus.xWinCount,
+                oWinCount: t === 'O' ? winnerStatus.oWinCount + 1 : winnerStatus.oWinCount
+            });
+        });
     }
 
     const jumpTo = (step) => {
-        const squares = history[step].squares.slice();
+        const squares = gameHistory[step].squares.slice();
         setStepNumber(step);
-        setWinnerPlayer(calculateWinner(squares));
+        setWinnerStatus(() => ({
+            ...winnerStatus,
+            currentWinner: calculateWinner(squares)
+        }));
     }
 
     const handleNewGame = () => {
-        setHistory(
+        setGameHistory(
             [{
                 squares: Array(9).fill(null),
                 nextPlayer: 'X',
@@ -49,27 +66,38 @@ function Game() {
             }]
         );
         setStepNumber(0);
-        setWinnerPlayer(null);
+        setWinnerStatus({
+            ...winnerStatus,
+            currentWinner: null
+        });
     }
 
     return (
         <div className="game">
             <div className="game-board">
                 <Board
-                    squares={history[stepNumber].squares}
+                    squares={gameHistory[stepNumber].squares}
                     onClick={(i) => handleClick(i)}
                 />
             </div>
             <div className="game-info">
                 <StatusBar
-                    next={history[stepNumber].nextPlayer}
-                    winner={winnerPlayer}
+                    next={gameHistory[stepNumber].nextPlayer}
+                    winner={winnerStatus.currentWinner}
                     onClick={() => handleNewGame()}
                 />
                 <MoveList
-                    history={history}
+                    gameHistory={gameHistory}
                     step={stepNumber}
                     onClick={(move) => jumpTo(move)}
+                />
+            </div>
+            <div className="game-info">
+                <WinCountTable
+                    winHistory={{
+                        x: winnerStatus.xWinCount,
+                        o: winnerStatus.oWinCount
+                    }}
                 />
             </div>
         </div>
