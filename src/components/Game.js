@@ -4,7 +4,7 @@ import StatusBar from './StatusBar.js';
 import MoveList from './MoveList.js';
 import WinCountTable from './WinCountTable.js';
 
-function Game() {
+export default function Game() {
     const [gameHistory, setGameHistory] = useState(
         [{
             squares: Array(9).fill(null),
@@ -20,12 +20,13 @@ function Game() {
             oWinCount: 0
         }
     );
+    const [gameDraw, setGameDraw] = useState(false);
 
     const handleClick = (i) => {
         const hist = gameHistory.slice(0, stepNumber + 1);
         const current = hist[hist.length - 1];
         const squares = current.squares.slice();
-        if (squares[i] || winnerStatus.currentWinner) {
+        if (squares[i] || winnerStatus.currentWinner || gameDraw) {
             return;
         }
         squares[i] = current.nextPlayer;
@@ -46,6 +47,7 @@ function Game() {
                 oWinCount: t === 'O' ? winnerStatus.oWinCount + 1 : winnerStatus.oWinCount
             });
         });
+        setGameDraw(checkDraw(squares));
     }
 
     const jumpTo = (step) => {
@@ -55,6 +57,7 @@ function Game() {
             ...winnerStatus,
             currentWinner: calculateWinner(squares)
         }));
+        setGameDraw(checkDraw(squares));
     }
 
     const handleNewGame = () => {
@@ -70,6 +73,7 @@ function Game() {
             ...winnerStatus,
             currentWinner: null
         });
+        setGameDraw(false);
     }
 
     return (
@@ -84,6 +88,7 @@ function Game() {
                 <StatusBar
                     next={gameHistory[stepNumber].nextPlayer}
                     winner={winnerStatus.currentWinner}
+                    draw={gameDraw}
                     onClick={() => handleNewGame()}
                 />
                 <MoveList
@@ -114,6 +119,11 @@ function setNextPlayer(currentPlayer) {
     }
 }
 
+// TODO: smarter draw logic (don't wait to fill the entirely board)
+function checkDraw(squares) {
+    return squares.every((value) => (value !== null))
+}
+
 function calculateWinner(squares) {
     const lines = [
         [0, 1, 2],
@@ -133,5 +143,3 @@ function calculateWinner(squares) {
     }
     return null;
 }
-
-export default Game;
