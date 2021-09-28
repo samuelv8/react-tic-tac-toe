@@ -3,8 +3,14 @@ import Board from './Board.js';
 import StatusBar from './StatusBar.js';
 import MoveList from './MoveList.js';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { playerWins } from '../redux/actions/gameActions.js';
+import { findName } from '../redux/reducers/gameReducer.js';
 
 export default function Game() {
+    const dispatch = useDispatch();
+    const playersNames = useSelector(state => state.players);
+    
     const [gameHistory, setGameHistory] = useState(
         [{
             squares: Array(9).fill(null),
@@ -13,20 +19,14 @@ export default function Game() {
         }]
     );
     const [stepNumber, setStepNumber] = useState(0);
-    const [winnerStatus, setWinnerStatus] = useState(
-        {
-            currentWinner: null,
-            xWinCount: 0,
-            oWinCount: 0
-        }
-    );
+    const [currentWinner, setCurrentWinner] = useState(null);
     const [gameDraw, setGameDraw] = useState(false);
 
     const handleClick = (i) => {
         const hist = gameHistory.slice(0, stepNumber + 1);
         const current = hist[hist.length - 1];
         const squares = current.squares.slice();
-        if (squares[i] || winnerStatus.currentWinner || gameDraw) {
+        if (squares[i] || currentWinner || gameDraw) {
             return;
         }
         squares[i] = current.nextPlayer;
@@ -39,13 +39,12 @@ export default function Game() {
             }])
         );
         setStepNumber(hist.length);
-        setWinnerStatus(() => {
+        setCurrentWinner(() => {
             let t = calculateWinner(squares);
-            return ({
-                currentWinner: t,
-                xWinCount: t === 'X' ? winnerStatus.xWinCount + 1 : winnerStatus.xWinCount,
-                oWinCount: t === 'O' ? winnerStatus.oWinCount + 1 : winnerStatus.oWinCount
-            });
+            if (t) {
+                handleWin(t);
+            }
+            return t;
         });
         setGameDraw(checkDraw(squares));
     }
@@ -53,10 +52,7 @@ export default function Game() {
     const jumpTo = (step) => {
         const squares = gameHistory[step].squares.slice();
         setStepNumber(step);
-        setWinnerStatus(() => ({
-            ...winnerStatus,
-            currentWinner: calculateWinner(squares)
-        }));
+        setCurrentWinner(() => calculateWinner(squares));
         setGameDraw(checkDraw(squares));
     }
 
@@ -69,11 +65,13 @@ export default function Game() {
             }]
         );
         setStepNumber(0);
-        setWinnerStatus({
-            ...winnerStatus,
-            currentWinner: null
-        });
+        setCurrentWinner(null);
         setGameDraw(false);
+    }
+
+    const handleWin = (winner) => {
+        let winnerName = findName(playersNames, winner);
+        dispatch(playerWins(winnerName));
     }
 
     return (
@@ -87,7 +85,7 @@ export default function Game() {
             <div className="game-info">
                 <StatusBar
                     next={gameHistory[stepNumber].nextPlayer}
-                    winner={winnerStatus.currentWinner}
+                    winner={currentWinner}
                     draw={gameDraw}
                     onClick={() => handleNewGame()}
                 />
@@ -100,7 +98,6 @@ export default function Game() {
             <Link to="/history">History</Link>
         </div>
     );
-
 }
 
 function setNextPlayer(currentPlayer) {
