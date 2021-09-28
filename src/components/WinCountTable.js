@@ -1,8 +1,9 @@
 import React from 'react';
+
 import { useSelector } from 'react-redux';
 
 export default function WinCountTable() {
-    const history = useSelector(state => state.winnersHistory)
+    const history = useSelector(state => state.winnersHistory).sort(comparePlayers); // sort descending
 
     return (
         <table>
@@ -24,4 +25,15 @@ export default function WinCountTable() {
             </tbody>
         </table>
     );
+}
+
+const comparePlayers = (a, b) => {
+    if (a.count > b.count) {
+        return -1;
+    }
+    if (a.count < b.count) {
+        return 1;
+    }
+    return 0;
+
 }
