@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Board from './Board.js';
 import StatusBar from './StatusBar.js';
 import MoveList from './MoveList.js';
-import WinCountTable from './WinCountTable.js';
+import { Link } from 'react-router-dom';
 
 export default function Game() {
     const [gameHistory, setGameHistory] = useState(
@@ -97,14 +97,7 @@ export default function Game() {
                     onClick={(move) => jumpTo(move)}
                 />
             </div>
-            <div className="game-info">
-                <WinCountTable
-                    winHistory={{
-                        x: winnerStatus.xWinCount,
-                        o: winnerStatus.oWinCount
-                    }}
-                />
-            </div>
+            <Link to="/history">History</Link>
         </div>
     );
 

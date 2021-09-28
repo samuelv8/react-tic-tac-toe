@@ -1,14 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
-WinCountTable.propTypes = {
-    winHistory: PropTypes.object
-}
+export default function WinCountTable() {
+    const history = useSelector(state => state.winnersHistory)
 
-export default function WinCountTable(props) {
-    return(
-        <div>
-            X: {props.winHistory.x} | O: {props.winHistory.o}
-        </div>
+    return (
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Wins</th>
+                </tr>
+            </thead>
+            <tbody>
+                {history.map(item => {
+                    return (
+                        <tr key={item.name}>
+                            <td>{item.name}</td>
+                            <td>{item.count}</td>
+                        </tr>
+                    );
+                })}
+            </tbody>
+        </table>
     );
 }
