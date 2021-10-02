@@ -11,9 +11,9 @@ export const api = axios.create({
 export default function HighScoresTable() {
     const dispatch = useDispatch();
     const highScores = useSelector(state => state.winnersHistory).sort(comparePlayers);
-    if (!highScores.length) {
+    if (highScores.length < 3) {
         trackPromise(
-            api.get('/users')
+            api.get('/highscores')
                 .then(({ data }) => {
                     dispatch(loadHighScores(data))
                 })

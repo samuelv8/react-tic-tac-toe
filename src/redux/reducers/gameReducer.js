@@ -1,3 +1,4 @@
+import { api } from "../../components/HighScoresTable";
 import { NAME_UPDATE, PLAYER_WINS } from "../actions/gameActions";
 import { LOAD_HIGH_SCORES } from "../actions/tableActions";
 
@@ -8,13 +9,21 @@ export function gameReducer(state, action) {
             let idx = hist.findIndex(x => x.username === action.payload.playerName);
             if (idx + 1) {
                 hist[idx].wins += 1;
+                api.put(`/users/${action.payload.playerName}`, {
+                    wins: hist[idx].wins
+                })
+                    .catch((error) => console.log(error));
             } else {
                 hist = hist.concat([{
                     username: action.payload.playerName,
                     wins: 1
                 }])
+                api.post('/users', {
+                    username: action.payload.playerName,
+                    wins: 1
+                })
+                    .catch((error) => console.log(error));
             }
-            // TODO: save in the backend
             return {
                 ...state,
                 winnersHistory: hist
