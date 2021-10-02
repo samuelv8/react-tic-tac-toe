@@ -1,32 +1,20 @@
 import { NAME_UPDATE, PLAYER_WINS } from "../actions/gameActions";
+import { LOAD_HIGH_SCORES } from "../actions/tableActions";
 
-const initialState = {
-    winnersHistory: [],
-    players: [
-        {
-            name: 'X',
-            symbol: 'X'
-        },
-        {
-            name: 'O',
-            symbol: 'O'
-        }
-    ]
-}
-
-export function gameReducer(state = initialState, action) {
+export function gameReducer(state, action) {
     switch (action.type) {
         case PLAYER_WINS: {
             let hist = state.winnersHistory.slice();
-            let idx = hist.findIndex(x => x.name === action.payload.playerName);
+            let idx = hist.findIndex(x => x.username === action.payload.playerName);
             if (idx + 1) {
-                hist[idx].count += 1;
+                hist[idx].wins += 1;
             } else {
                 hist = hist.concat([{
-                    name: action.payload.playerName,
-                    count: 1
+                    username: action.payload.playerName,
+                    wins: 1
                 }])
             }
+            // TODO: save in the backend
             return {
                 ...state,
                 winnersHistory: hist
@@ -40,6 +28,12 @@ export function gameReducer(state = initialState, action) {
             return {
                 ...state,
                 players: ply
+            }
+        }
+        case LOAD_HIGH_SCORES: {
+            return {
+                ...state,
+                winnersHistory: action.payload.loadedHighScoresData
             }
         }
         default:

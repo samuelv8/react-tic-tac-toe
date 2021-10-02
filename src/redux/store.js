@@ -1,6 +1,24 @@
-import { createStore } from "redux";
 import { gameReducer } from "./reducers/gameReducer";
+import {createStore, applyMiddleware} from 'redux'
+import thunk from 'redux-thunk'
+import {composeWithDevTools} from 'redux-devtools-extension'
 
-export default createStore(gameReducer);
+const initialState = {
+    winnersHistory: [],
+    players: [
+        {
+            name: 'X',
+            symbol: 'X'
+        },
+        {
+            name: 'O',
+            symbol: 'O'
+        }
+    ]
+}
 
-// TODO: connect component with store
+const middleware = [thunk]
+
+const store = createStore(gameReducer, initialState, composeWithDevTools(applyMiddleware(...middleware)))
+
+export default store;

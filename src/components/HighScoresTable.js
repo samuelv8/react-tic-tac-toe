@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import { trackPromise } from 'react-promise-tracker';
+import { loadHighScores } from '../redux/actions/tableActions';
 
 export const api = axios.create({
     baseURL: "http://localhost:3000"
 });
 
 export default function HighScoresTable() {
-    // const history = useSelector(state => state.winnersHistory).sort(comparePlayers); // sort descending
-    const [highScores, setHighScores] = useState([])
-    trackPromise(
-        api.get('/users')
-            .then((response) => {
-                setHighScores(response.data)
-            })
-    );
+    const dispatch = useDispatch();
+    const highScores = useSelector(state => state.winnersHistory).sort(comparePlayers);
+    if (!highScores.length) {
+        trackPromise(
+            api.get('/users')
+                .then(({ data }) => {
+                    dispatch(loadHighScores(data))
+                })
+        );
+    }
+
     return (
         <table>
             <thead>
@@ -39,13 +44,12 @@ const Row = (item) => {
     );
 }
 
-// const comparePlayers = (a, b) => {
-//     if (a.count > b.count) {
-//         return -1;
-//     }
-//     if (a.count < b.count) {
-//         return 1;
-//     }
-//     return 0;
-
-// }
+const comparePlayers = (a, b) => {
+    if (a.wins > b.wins) {
+        return -1;
+    }
+    if (a.wins < b.wins) {
+        return 1;
+    }
+    return 0;
+}
