@@ -1,7 +1,7 @@
 import React from 'react';
 import Game from './components/Game';
 import WelcomePage from './components/WelcomePage';
-import WinCountTable from './components/WinCountTable';
+import HighScoresTable from './components/HighScoresTable';
 import LoadingIndicator from './components/LoadingIndicator';
 import { Provider } from 'react-redux';
 import store from './redux/store';
@@ -21,7 +21,7 @@ export default function App() {
                         <Game />
                     </Route>
                     <Route path="/history">
-                        <WinCountTable />
+                        <HighScoresTable />
                     </Route>
                     <Route path="/">
                         <WelcomePage />

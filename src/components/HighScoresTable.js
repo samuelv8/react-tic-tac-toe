@@ -6,7 +6,7 @@ export const api = axios.create({
     baseURL: "http://localhost:3000"
 });
 
-export default function WinCountTable() {
+export default function HighScoresTable() {
     // const history = useSelector(state => state.winnersHistory).sort(comparePlayers); // sort descending
     const [highScores, setHighScores] = useState([])
     trackPromise(
