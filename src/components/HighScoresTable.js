@@ -1,24 +1,25 @@
-import React from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { trackPromise } from 'react-promise-tracker';
+import { getHighScores } from '../api';
 import { loadHighScores } from '../redux/actions/tableActions';
 
-export const api = axios.create({
-    baseURL: "http://localhost:3000"
-});
+
 
 export default function HighScoresTable() {
     const dispatch = useDispatch();
-    const highScores = useSelector(state => state.winnersHistory).sort(comparePlayers);
-    if (highScores.length < 3) {
-        trackPromise(
-            api.get('/highscores')
-                .then(({ data }) => {
-                    dispatch(loadHighScores(data))
-                })
-        );
-    }
+    const highScores = useSelector(state => state.highScores).sort(comparePlayers);
+    const hasLoadedHighScores = useSelector(state => state.hasLoadedHighScores);
+    useEffect(() => {
+        if (!hasLoadedHighScores) {
+            trackPromise(
+                getHighScores()
+                    .then(({ data }) => {
+                        dispatch(loadHighScores(data))
+                    })
+            );
+        }
+    }, [hasLoadedHighScores]);
 
     return (
         <table>

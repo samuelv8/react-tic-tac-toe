@@ -4,12 +4,15 @@ import StatusBar from './StatusBar.js';
 import MoveList from './MoveList.js';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { getHighScores } from '../api';
 import { playerWins } from '../redux/actions/gameActions.js';
 import { findName } from '../redux/reducers/gameReducer.js';
+import { loadHighScores } from '../redux/actions/tableActions.js';
 
 export default function Game() {
     const dispatch = useDispatch();
     const playersNames = useSelector(state => state.players);
+    const hasLoadedHighScores = useSelector(state => state.hasLoadedHighScores);
     
     const [gameHistory, setGameHistory] = useState(
         [{
@@ -71,6 +74,9 @@ export default function Game() {
 
     const handleWin = (winner) => {
         let winnerName = findName(playersNames, winner);
+        if(!hasLoadedHighScores) {
+            getHighScores(dispatch, loadHighScores);
+        }
         dispatch(playerWins(winnerName));
     }
 
