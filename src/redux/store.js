@@ -4,7 +4,8 @@ import thunk from 'redux-thunk'
 import {composeWithDevTools} from 'redux-devtools-extension'
 
 const initialState = {
-    winnersHistory: [],
+    highScores: [],
+    hasLoadedHighScores: false,
     players: [
         {
             name: 'X',

@@ -1,32 +1,25 @@
-import { api } from "../../components/HighScoresTable";
 import { NAME_UPDATE, PLAYER_WINS } from "../actions/gameActions";
 import { LOAD_HIGH_SCORES } from "../actions/tableActions";
+import { postScore, updateScore } from "../../api";
 
 export function gameReducer(state, action) {
     switch (action.type) {
         case PLAYER_WINS: {
-            let hist = state.winnersHistory.slice();
+            let hist = state.highScores.slice();
             let idx = hist.findIndex(x => x.username === action.payload.playerName);
             if (idx + 1) {
                 hist[idx].wins += 1;
-                api.put(`/users/${action.payload.playerName}`, {
-                    wins: hist[idx].wins
-                })
-                    .catch((error) => console.log(error));
+                updateScore(hist[idx].username, hist[idx].wins);
             } else {
                 hist = hist.concat([{
                     username: action.payload.playerName,
                     wins: 1
                 }])
-                api.post('/users', {
-                    username: action.payload.playerName,
-                    wins: 1
-                })
-                    .catch((error) => console.log(error));
+                postScore(action.payload.playerName, 1);
             }
             return {
                 ...state,
-                winnersHistory: hist
+                highScores: hist
             }
         }
         case NAME_UPDATE: {
@@ -42,7 +35,8 @@ export function gameReducer(state, action) {
         case LOAD_HIGH_SCORES: {
             return {
                 ...state,
-                winnersHistory: action.payload.loadedHighScoresData
+                highScores: action.payload.loadedHighScoresData,
+                hasLoadedHighScores: true
             }
         }
         default:
